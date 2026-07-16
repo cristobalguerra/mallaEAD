@@ -554,9 +554,11 @@ body[data-carrera="ldnm"] #filtersBar { display:none !important; }
   padding:5px 14px; margin-bottom:20px; }
 .ldnm-placeholder h2 { font-family:'Raleway',sans-serif; font-weight:800; font-size:2rem; margin-bottom:14px; color:var(--text); }
 .ldnm-placeholder p { color:var(--text-secondary); line-height:1.6; font-size:1.02rem; }
-/* Logo de empresa dentro de la tarjeta de respaldo (p.ej. Nadia Manjarrez) — en blanco */
-.resp-photo.logo { background:transparent !important; display:flex; align-items:center; justify-content:center; padding:8px; overflow:hidden; }
-.resp-photo.logo img { width:100%; height:100%; object-fit:contain; filter:brightness(0) invert(1); }
+/* Tarjeta de empresa con logo (wordmark) — banner en blanco a lo ancho */
+.resp-card.is-logo { align-items:center; text-align:center; justify-content:flex-start; }
+.resp-logo-wrap { width:100%; min-height:64px; display:flex; align-items:center; justify-content:center; padding:14px 6px 10px; }
+.resp-logo-wrap img { max-width:88%; max-height:52px; object-fit:contain; filter:brightness(0) invert(1); }
+.resp-card.is-logo .resp-bio { margin-top:0; }
 
 .card-name {
   font-family:'Raleway',sans-serif; font-size:0.95rem; font-weight:600;
@@ -6846,12 +6848,17 @@ function ldnmProgramaHTML(){
 
 // Congruencia narrativa de LDNM (sin modelo cuantitativo — el docx deja el balance por calcular)
 function _respCard(p){
+  // Empresa con logo de marca (wordmark): banner en blanco a lo ancho + descripción
+  if (p.logo){
+    return `<div class="resp-card is-logo">`+
+      `<div class="resp-logo-wrap"><img src="${p.logo}" alt="${_esc(p.nombre)}"></div>`+
+      (p.bio?`<div class="resp-bio">${_esc(p.bio)}</div>`:'')+
+      `</div>`;
+  }
   const ini = p.nombre.split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
-  const media = p.logo
-    ? `<div class="resp-photo logo"><img src="${p.logo}" alt="${_esc(p.nombre)}"></div>`
-    : (p.foto
-        ? `<img class="resp-photo" src="${p.foto}" alt="${_esc(p.nombre)}">`
-        : `<div class="resp-photo initials" aria-hidden="true">${ini}</div>`);
+  const media = p.foto
+    ? `<img class="resp-photo" src="${p.foto}" alt="${_esc(p.nombre)}">`
+    : `<div class="resp-photo initials" aria-hidden="true">${ini}</div>`;
   return `<div class="resp-card">${media}`+
     `<div class="resp-nombre">${_esc(p.nombre)}</div>`+
     (p.cargo?`<div class="resp-cargo">${_esc(p.cargo)}</div>`:'')+
@@ -6876,7 +6883,7 @@ function ldnmCongruenciaHTML(){
   ];
   const casos = [
     {nombre:'Nadia Manjarrez Studio', bio:'Moda nupcial; vende en México, EE.UU., Europa y Medio Oriente. Presencia en New York Bridal Fashion Week.'},
-    {nombre:'Mains d’Vapeur', bio:'Marca de moda de autor nacida de un proyecto de titulación.'},
+    {nombre:'Mains d’Vapeur', logo:'fotos/ldnm-mains-logo.png', bio:'Marca de moda de autor nacida de un proyecto de titulación.'},
     {nombre:'Carduma', bio:'Marca de moda fundada por egresados del programa.'},
     {nombre:'Amalcia', bio:'Marca de moda fundada por egresados del programa.'},
     {nombre:'FC Agency', bio:'Agencia de servicios para la industria de la moda.'},
