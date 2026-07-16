@@ -6895,9 +6895,19 @@ function ldnmCongruenciaHTML(){
 
   return `<div class="congr-container">
     <div class="congr-hero">
-      <div class="congr-hero-badge">Plan 2027 · Cambio de denominación</div>
+      <div class="congr-hero-badge">Plan 2027 · Balance disciplinar estimado</div>
       <h1>Integración curricular de los <em style="font-style:normal;color:var(--accent)">Negocios de la Moda</em></h1>
-      <p class="congr-hero-sub">El cambio de nombre a <strong>Licenciatura en Diseño y Negocios de la Moda</strong> no modifica la esencia disciplinar de la carrera: transparenta el perfil de egreso y comunica con mayor precisión el alcance de la formación.</p>
+      <p class="congr-hero-sub">Estimación del contenido de diseño frente al de negocios, midiendo los programas del plan (0–3 por dimensión). Para un alumno con especialización en Negocios de la Moda:</p>
+      <div class="split-wrap">
+        <div class="split-nums">
+          <div><div class="split-num" id="ldnmSplitDM" style="color:var(--accent)">0<small>%</small></div><div class="split-label">Diseño de Moda</div></div>
+          <div style="text-align:right;"><div class="split-num" id="ldnmSplitNM" style="color:#A855F7">0<small>%</small></div><div class="split-label">Negocios de la Moda</div></div>
+        </div>
+        <div class="split-bar" role="img" aria-label="Peso relativo: Diseño de Moda 65.7%, Negocios de la Moda 34.3%">
+          <i class="sb-dv" id="ldnmSbDM" style="background:var(--accent)"></i><i class="sb-nc" id="ldnmSbNM" style="background:#A855F7"></i>
+        </div>
+      </div>
+      <p class="congr-reading">Uno de cada tres puntos de contenido forma en negocios de la moda — <strong>la denominación corresponde a una estructura curricular real</strong>.</p>
       <div class="congr-stats">
         <div class="congr-stat"><b>6</b><span>asignaturas del eje de negocios</span></div>
         <div class="congr-stat"><b>7</b><span>competencias disciplinares</span></div>
@@ -6952,9 +6962,31 @@ function ldnmCongruenciaHTML(){
     </div>
 
     <div class="fund-nota" style="max-width:1080px;margin:0 auto 40px;">
-      <strong>Nota metodológica:</strong> a diferencia de LDV (balance 59/41), el expediente de LDNM aún no reporta un porcentaje diseño-vs-negocios: la medición cuantitativa por materia (espectro, matriz y dimensiones por SLO) está <strong>en preparación</strong>. Este apartado presenta el argumento documental y de industria que sí está disponible.
+      <strong>Nota metodológica:</strong> el balance se estimó midiendo los programas analíticos del plan con el mismo método de LDV (cada materia calificada 0–3 en dimensiones de Diseño de Moda y de Negocios de la Moda), con verificación adversarial. La cifra mostrada (34% negocios) corresponde a un alumno con <strong>especialización en Negocios de la Moda</strong> —certificado LMEC o concentración de Negocios en sus seis optativas—; el núcleo obligatorio que cursa todo egresado ronda el <strong>31%</strong>. Es una estimación basada en los programas, no una matriz oficial validada.
     </div>
   </div>`;
+}
+
+// Anima la barra 65.7/34.3 del hero de Congruencia de LDNM cuando entra en viewport
+function _animateLdnmSplit(){
+  const DM=65.7, NM=34.3;
+  const setFinal=()=>{ const a=document.getElementById('ldnmSbDM'),b=document.getElementById('ldnmSbNM'),
+    na=document.getElementById('ldnmSplitDM'),nb=document.getElementById('ldnmSplitNM');
+    if(a)a.style.width=DM+'%'; if(b)b.style.width=NM+'%';
+    if(na)na.innerHTML=DM.toFixed(1)+'<small>%</small>'; if(nb)nb.innerHTML=NM.toFixed(1)+'<small>%</small>'; };
+  const bar=document.querySelector('#view-congruencia .split-bar');
+  if(!bar || !window.IntersectionObserver){ setFinal(); return; }
+  const io=new IntersectionObserver(es=>{
+    if(!es[0].isIntersecting) return; io.disconnect();
+    document.getElementById('ldnmSbDM').style.width=DM+'%';
+    document.getElementById('ldnmSbNM').style.width=NM+'%';
+    const t0=performance.now(), dur=1100;
+    (function tick(now){ const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3);
+      document.getElementById('ldnmSplitDM').innerHTML=(DM*e).toFixed(1)+'<small>%</small>';
+      document.getElementById('ldnmSplitNM').innerHTML=(NM*e).toFixed(1)+'<small>%</small>';
+      if(p<1) requestAnimationFrame(tick); })(t0);
+  },{threshold:0.3});
+  io.observe(bar);
 }
 
 function applyCareerViews(carrera){
@@ -6963,7 +6995,7 @@ function applyCareerViews(carrera){
   const cert=document.getElementById('view-certificados');
   if (carrera === 'ldnm') {
     if (prog) prog.innerHTML = ldnmProgramaHTML();
-    if (cong) cong.innerHTML = ldnmCongruenciaHTML();
+    if (cong) { cong.innerHTML = ldnmCongruenciaHTML(); _animateLdnmSplit(); }
     if (cert) cert.innerHTML = ldnmCertHTML();
   } else {
     if (prog && _viewHTML.programa != null) prog.innerHTML = _viewHTML.programa;
