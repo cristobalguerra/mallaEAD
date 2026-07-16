@@ -554,6 +554,9 @@ body[data-carrera="ldnm"] #filtersBar { display:none !important; }
   padding:5px 14px; margin-bottom:20px; }
 .ldnm-placeholder h2 { font-family:'Raleway',sans-serif; font-weight:800; font-size:2rem; margin-bottom:14px; color:var(--text); }
 .ldnm-placeholder p { color:var(--text-secondary); line-height:1.6; font-size:1.02rem; }
+/* Logo de empresa dentro de la tarjeta de respaldo (p.ej. Nadia Manjarrez) — en blanco */
+.resp-photo.logo { background:transparent !important; display:flex; align-items:center; justify-content:center; padding:8px; overflow:hidden; }
+.resp-photo.logo img { width:100%; height:100%; object-fit:contain; filter:brightness(0) invert(1); }
 
 .card-name {
   font-family:'Raleway',sans-serif; font-size:0.95rem; font-weight:600;
@@ -6844,8 +6847,14 @@ function ldnmProgramaHTML(){
 // Congruencia narrativa de LDNM (sin modelo cuantitativo — el docx deja el balance por calcular)
 function _respCard(p){
   const ini = p.nombre.split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
-  return `<div class="resp-card"><div class="resp-photo initials" aria-hidden="true">${ini}</div>`+
-    `<div class="resp-nombre">${_esc(p.nombre)}</div><div class="resp-cargo">${_esc(p.cargo)}</div>`+
+  const media = p.logo
+    ? `<div class="resp-photo logo"><img src="${p.logo}" alt="${_esc(p.nombre)}"></div>`
+    : (p.foto
+        ? `<img class="resp-photo" src="${p.foto}" alt="${_esc(p.nombre)}">`
+        : `<div class="resp-photo initials" aria-hidden="true">${ini}</div>`);
+  return `<div class="resp-card">${media}`+
+    `<div class="resp-nombre">${_esc(p.nombre)}</div>`+
+    (p.cargo?`<div class="resp-cargo">${_esc(p.cargo)}</div>`:'')+
     (p.bio?`<div class="resp-bio">${_esc(p.bio)}</div>`:'')+
     (p.creds&&p.creds.length?`<ul class="resp-creds">${p.creds.map(c=>`<li>${_esc(c)}</li>`).join('')}</ul>`:'')+
     `</div>`;
