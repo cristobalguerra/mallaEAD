@@ -1,0 +1,13 @@
+# Material interno de trabajo (no se publica)
+_analisis/
+_ldnm_import/
+_deck-slides-archivado/
+index.base-ldv.html
+mallaEAD.md
+codigo-ia.html
+certificado-propuesta.html
+.claude/
+
+# Sistema
+._*
+.DS_Store
